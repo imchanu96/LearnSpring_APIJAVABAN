@@ -1,6 +1,9 @@
 package com.edu.member.service;
 
 import java.util.List;
+import java.util.Map;
+
+import org.springframework.web.multipart.MultipartHttpServletRequest;
 
 import com.edu.member.dto.MemberDto;
 
@@ -11,14 +14,15 @@ public interface MemberService {
 	
 	public MemberDto memberExist(String email, String password);
 	
-	public int memberInsertOne(MemberDto memberDto);
+	public void memberInsertOne(MemberDto memberDto
+			, MultipartHttpServletRequest multipartHttpServletRequest) throws Exception;
 	
-	public MemberDto memberSelectOne(int no);
+	public Map<String, Object> memberSelectOne(int no);
 
-	public int memberUpdateOne(MemberDto memberDto);
-	
+	public int memberUpdateOne(MemberDto memberDto
+			, MultipartHttpServletRequest multipartHttpServletRequest
+			, int fileIdx) throws Exception;
 	public int memberDeleteOne(int no);
-
 	public int memberSelectTotalCount();
 
 	

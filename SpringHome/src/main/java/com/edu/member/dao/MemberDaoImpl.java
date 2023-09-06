@@ -15,6 +15,8 @@ public class MemberDaoImpl implements MemberDao{
 
 	@Autowired
 	SqlSessionTemplate sqlSession;
+	String namespace = "com.edu.member.";
+	
 	
 	@Override
 	public List<MemberDto> memberSelectList(int start, int end) {
@@ -65,6 +67,32 @@ public class MemberDaoImpl implements MemberDao{
 	public int memberSelectTotalCount() {
 		// TODO Auto-generated method stub
 		return (int)sqlSession.selectOne("com.edu.member.memberSelectTotalCount");
+	}
+
+	@Override
+	public void insertFile(Map<String, Object> map) {
+		// TODO Auto-generated method stub
+		sqlSession.insert("com.edu.member.insertFile", map);
+	}
+
+	@Override
+	public List<Map<String, Object>> fileSelectList(int no) {
+		// TODO Auto-generated method stub
+		
+		return sqlSession.selectList(namespace + "fileSelectList", no);
+	}
+
+	@Override
+	public Map<String, Object> fileSelectStoredFileName(int parentSeq) {
+		// TODO Auto-generated method stub
+		return sqlSession.selectOne(namespace + "fileSelectStoredFileName", parentSeq);
+	}
+
+	@Override
+	public int fileDelete(int parentSeq) {
+		// TODO Auto-generated method stub
+		
+		return sqlSession.delete(namespace + "fileDelete", parentSeq);
 	}
 
 	

@@ -2,6 +2,7 @@ package com.edu.member.controller;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.http.HttpSession;
 
@@ -13,6 +14,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.multipart.MultipartHttpServletRequest;
 
 import com.edu.member.dto.MemberDto;
 import com.edu.member.service.MemberService;
@@ -25,6 +27,7 @@ public class MemberController {
 	
 	@Autowired
 	private MemberService memberService;
+	
 	
 	// 로그인 화면으로 이동
 	@RequestMapping(value = "/auth/login.do", method = RequestMethod.GET)
@@ -64,6 +67,21 @@ public class MemberController {
 		return "redirect:/auth/login.do";
 	}
 	
+	@RequestMapping(value = "/member/listOne.do", method = RequestMethod.GET)
+	public String memberListOne(int no, Model model) {
+		log.debug("Welcome MemberController memberlistOne! - {}", no);
+		
+		Map<String, Object> map = memberService.memberSelectOne(no);
+		
+		MemberDto memberDto = (MemberDto)map.get("memberDto");
+		List<Map<String, Object>> fileList
+			= (List<Map<String, Object>>) map.get("fileList");
+		
+		model.addAttribute("memberDto", memberDto);
+		model.addAttribute("fileList", fileList);
+		
+		return "member/MemberListOneView";
+	}
 	//회원 목록 출력
 	@RequestMapping(value = "/member/list.do", 
 			method = {RequestMethod.GET, RequestMethod.POST})
@@ -98,34 +116,63 @@ public class MemberController {
 	}
 	//회원 추가
 	@RequestMapping(value= "/member/addCtr.do", method = RequestMethod.POST)
-	public String memberAdd(MemberDto memberDto, Model model) {
+	public String memberAdd(MemberDto memberDto, MultipartHttpServletRequest mulRequest
+			, Model model) {
 		log.debug("Welcome MemberController MemberAdd" + memberDto);
 		
-		memberService.memberInsertOne(memberDto);		
+		try {
+			memberService.memberInsertOne(memberDto , mulRequest);
+		} catch (Exception e) {
+			// TODO: handle exception
+			System.out.println("오류 처리할거 있음 한다.");
+			e.printStackTrace();
+		}
+				
 //		int resultNum = memberService.memberInsertOne(memberDto);
 		
 //		System.out.println("추가된 회원 데이터 수" + resultNum);		
 		return "redirect:/member/list.do";
 	}
 	
-	@RequestMapping(value = "/member/update.do", method = RequestMethod.GET)
-	public String memberUdate(int no, Model model) {
-		log.info("Welcome MemberController memberUdate" + no);
-		
-		MemberDto memberDto = memberService.memberSelectOne(no);
-		
-		model.addAttribute("memberDto", memberDto);
-		
-		return "member/MemberUpdateForm";
-	}
+	
+	
+	 //  일반 .do는 단순 페이지 이동
+	 @RequestMapping(value = "/member/update.do", method = RequestMethod.GET)
+	 public String memberUpdate(int no, Model model) {
+	     log.info("Welcome MemberController memberUpdate!" + no);
+	     
+	     Map<String, Object> map = memberService.memberSelectOne(no);
+	     
+	     MemberDto memberDto = (MemberDto)map.get("memberDto");
+	     
+	     List<Map<String, Object>> fileList 
+	     	= (List<Map<String, Object>>)map.get("fileList");
+	     
+	     model.addAttribute("memberDto", memberDto);
+	     model.addAttribute("fileList", fileList);
+	     
+	     return "member/MemberUpdateForm";
+	 }
 	
 	@RequestMapping(value = "/member/updateCtr.do", method = RequestMethod.POST)
-	public String memberUpdateCtr(MemberDto memberDto, Model model) {
-		log.info("Welcome MemberController memberupdateCtr" + memberDto);
+	public String memberUpdateCtr(MemberDto memberDto
+			, @RequestParam(value = "fileIdx", defaultValue = "-1") int fileIdx
+			, MultipartHttpServletRequest mulRequest
+			, Model model) {
+		log.info("Welcome MemberController memberupdateCtr! memberDto: {} \n fileIdx: {}"
+			, memberDto, fileIdx);
 		
-		memberService.memberUpdateOne(memberDto);
+		int resultNum = 0;
 		
-		return "redirect:/member/list.do";
+		try {
+			resultNum = memberService.memberUpdateOne(memberDto, mulRequest, fileIdx);
+		} catch (Exception e) {
+			// TODO: handle exception
+			e.printStackTrace();
+		}
+//		
+		
+		return "common/SuccessPage";
 	}
 	
 	@RequestMapping(value = "/member/delete.do", method = RequestMethod.GET)

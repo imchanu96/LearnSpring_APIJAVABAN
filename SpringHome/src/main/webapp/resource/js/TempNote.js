@@ -10,10 +10,11 @@
 	 alert(curPageObj.val());
 	 
 	 var pagingFormObj =$('#pagingForm');
-	 pagingFormObj.
+	 pagingFormObj
 	 
 	 pagingFormObj.submit();
 	 document.getElementsByClassName
 	 event.target.style.backgroundColor = "red";
+	 
 	 
  }

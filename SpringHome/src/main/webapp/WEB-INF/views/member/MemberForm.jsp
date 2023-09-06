@@ -13,10 +13,11 @@
 	<jsp:include page="/WEB-INF/views/Header.jsp"/>
 	
 	<h1>회원등록</h1>
-	<form action='./addCtr.do' method='post'>
+	<form action='./addCtr.do' method='post' enctype="multipart/form-data">
 		이름: <input type='text' name='name'><br> 
 		이메일: <input type='text' name='email'><br> 
 		암호: <input type='password' 	name='password'><br>
+		파일: <input type='file' name='file'>
 			<input type='submit' value='추가'>
 			<input type='button' value='취소' onclick="pageListMovefnc();">
 	</form>
